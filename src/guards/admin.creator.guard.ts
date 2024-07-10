@@ -1,26 +1,53 @@
 import {
+  BadRequestException,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
   Injectable,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Observable } from "rxjs";
 
 @Injectable()
 export class creatorGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(private readonly jwrService: JwtService) {}
   canActivate(
     context: ExecutionContext
   ): boolean | Promise<boolean> | Observable<boolean> {
     const req = context.switchToHttp().getRequest();
-    console.log(req.admin);
+    const authHeader = req.headers.authorization;
+    if (!authHeader) throw new UnauthorizedException("Admin is unauthorized");
 
-    if (req.admin.is_active !== true || ! req.admin.is_creator) {
-      throw new ForbiddenException({
-        message: "Admin is not active or creator",
-      });
+    const bearer = authHeader.split(" ")[0];
+    const token = authHeader.split(" ")[1];
+
+    if (bearer != "Bearer" || !token)
+      throw new UnauthorizedException("Admin is unauthorized");
+
+    async function verify(token: string, jwrService: JwtService) {
+      let admin: any;
+      try {
+        admin = await jwrService.verify(token, {
+          secret: process.env.ACCESS_TOKEN_KEY,
+        });
+      } catch (error) {
+        console.log(error);
+        throw new UnauthorizedException("Invalid token");
+      }
+
+      if (!admin) {
+        throw new UnauthorizedException("Admin is unauthorized");
+      }
+
+      if (!admin.is_creator) {
+        throw new ForbiddenException("You are not allowed to do this!");
+      }
+
+      req.admin = admin;
+
+      return true;
     }
-    return true;
+    return verify(token, this.jwrService);
   }
 }
