@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+import { ValidationPipe } from '@nestjs/common';
 
 
 async function Start() {
@@ -10,6 +11,7 @@ async function Start() {
   const config = app.get(ConfigService);
   const PORT = config.get<number>('API_PORT') || 3030;
 
+   app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix('api')
   const options = new DocumentBuilder()
     .setTitle('Your API Title')

@@ -1,15 +1,26 @@
-import { Module } from '@nestjs/common';
+import { Module } from "@nestjs/common";
 
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule } from "@nestjs/config";
 
-import { SequelizeModule } from '@nestjs/sequelize';
+import { SequelizeModule } from "@nestjs/sequelize";
+import { CloudinaryModule } from "./cloudinary/cloudinary.module";
+import { ClientModule } from "./client/client.module";
+import { AdminModule } from "./admin/admin.module";
+import { RegionModule } from "./region/region.module";
+import { DistrictsModule } from "./districts/districts.module";
+import { TaxiOrderModule } from "./taxi_order/taxi_order.module";
+import { DeliveryOrderModule } from "./delivery_order/delivery_order.module";
+import { BalanceModule } from "./balance/balance.module";
+import { DriverModule } from "./driver/driver.module";
+import { CarDriverModule } from "./car_driver/car_driver.module";
+import { CarModule } from "./car/car.module";
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
+    ConfigModule.forRoot({ envFilePath: ".env", isGlobal: true }),
 
     SequelizeModule.forRoot({
-      dialect: 'postgres',
+      dialect: "postgres",
 
       host: process.env.POSTGRES_HOST,
 
@@ -21,7 +32,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 
       database: process.env.POSTGRES_DB,
 
-      models: [__dirname + 'dist/**/*.entity{.ts,.js}'],
+      models: [__dirname + "dist/**/*.entity{.ts,.js}"],
 
       autoLoadModels: true,
 
@@ -29,6 +40,28 @@ import { SequelizeModule } from '@nestjs/sequelize';
 
       logging: false,
     }),
+
+    CloudinaryModule,
+
+    ClientModule,
+
+    AdminModule,
+
+    RegionModule,
+
+    DistrictsModule,
+
+    TaxiOrderModule,
+
+    DeliveryOrderModule,
+
+    BalanceModule,
+
+    DriverModule,
+
+    CarDriverModule,
+
+    CarModule,
   ],
 
   controllers: [],
