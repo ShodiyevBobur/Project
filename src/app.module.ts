@@ -14,6 +14,8 @@ import { BalanceModule } from "./balance/balance.module";
 import { DriverModule } from "./driver/driver.module";
 import { CarDriverModule } from "./car_driver/car_driver.module";
 import { CarModule } from "./car/car.module";
+import { OtpModule } from "./otp/otp.module";
+import { SmsModule } from "./sms/sms.module";
 
 @Module({
   imports: [
@@ -62,6 +64,10 @@ import { CarModule } from "./car/car.module";
     CarDriverModule,
 
     CarModule,
+
+    OtpModule,
+
+    SmsModule,
   ],
 
   controllers: [],

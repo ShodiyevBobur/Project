@@ -9,12 +9,14 @@ import { ValidationPipe } from '@nestjs/common';
 async function Start() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
-  const PORT = config.get<number>('API_PORT') || 3030;
+  console.log(config.get<number>("PORT"));
+  
+  const PORT = config.get<number>('PORT') || 3030;
 
    app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix('api')
   const options = new DocumentBuilder()
-    .setTitle('Your API Title')
+    .setTitle('Taxi Uzbekistan')
     .setDescription('API description')
     .setVersion('1.0')
     .build();
