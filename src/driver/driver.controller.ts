@@ -21,15 +21,14 @@ import {
   ApiOperation,
   ApiResponse,
   ApiTags,
+  ApiBody,
+  ApiParam,
 } from "@nestjs/swagger";
 import { Driver } from "./entities/driver.entity";
 import { LoginDriverDto } from "./dto/login-driver.dto";
 import { Response } from "express";
-import {
-  FileFieldsInterceptor,
-  FileInterceptor,
-  FilesInterceptor,
-} from "@nestjs/platform-express";
+import { FileFieldsInterceptor } from "@nestjs/platform-express";
+import { SummaDto } from "./dto/summa-driver.dto";
 
 @ApiTags("driver")
 @Controller("driver")
@@ -43,7 +42,9 @@ export class DriverController {
       { name: "prava", maxCount: 1 },
     ])
   )
-  @ApiOperation({ summary: "Register a new driver" })
+  @ApiOperation({ summary: "Register a new driver with photo and prava files" })
+  @ApiConsumes("multipart/form-data")
+  @ApiBody({ type: CreateDriverDto })
   @ApiResponse({
     status: 201,
     description: "Driver registered successfully",
@@ -52,11 +53,12 @@ export class DriverController {
   create(
     @Body() createDriverDto: CreateDriverDto,
     @UploadedFiles()
-    files: { photo?: Express.Multer.File[]; prava?: Express.Multer.File[] }
+    files: { photo?: Express.Multer.File[]; prava?: Express.Multer.File[] },
+    @Res({ passthrough: true }) res: Response
   ) {
     const photo = files.photo?.[0];
     const prava = files.prava?.[0];
-    return this.driverService.register(createDriverDto, photo, prava);
+    return this.driverService.register(createDriverDto, photo, prava, res);
   }
 
   @Post("login")
@@ -70,6 +72,66 @@ export class DriverController {
     @Res({ passthrough: true }) res: Response
   ) {
     return this.driverService.login(loginDriverDto, res);
+  }
+
+  @Put("activate/:id")
+  @ApiOperation({ summary: "Activate a driver" })
+  @ApiParam({ name: "id", description: "Driver ID" })
+  @ApiResponse({
+    status: 200,
+    description: "Driver activated successfully",
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Driver not found",
+  })
+  active(@Param("id") id: string) {
+    return this.driverService.activeDriver(+id);
+  }
+
+  @Put("unactivate/:id")
+  @ApiOperation({ summary: "Deactivate a driver" })
+  @ApiParam({ name: "id", description: "Driver ID" })
+  @ApiResponse({
+    status: 200,
+    description: "Driver deactivated successfully",
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Driver not found",
+  })
+  unactive(@Param("id") id: string) {
+    return this.driverService.unactiveDriver(+id);
+  }
+
+  @Post("balance/:id")
+  @ApiOperation({ summary: "Add balance to a driver's account" })
+  @ApiParam({ name: "id", description: "Driver ID" })
+  @ApiResponse({
+    status: 200,
+    description: "Balance added successfully",
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Driver not found",
+  })
+  addBalance(@Param("id") id: string, @Body() summaDto: SummaDto) {
+    return this.driverService.addMoney(+id, summaDto);
+  }
+
+  @Delete("balance/:id")
+  @ApiOperation({ summary: "Remove balance from a driver's account" })
+  @ApiParam({ name: "id", description: "Driver ID" })
+  @ApiResponse({
+    status: 200,
+    description: "Balance removed successfully",
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Driver not found",
+  })
+  removeBalance(@Param("id") id: string, @Body() summaDto: SummaDto) {
+    return this.driverService.removeMoney(+id, summaDto);
   }
 
   @Get()
@@ -87,8 +149,20 @@ export class DriverController {
     return this.driverService.findAll({ name, surname, phone });
   }
 
+  @Get("unactives")
+  @ApiOperation({ summary: "Get all unactive drivers" })
+  @ApiResponse({
+    status: 200,
+    description: "Return all unactive drivers",
+    type: [Driver],
+  })
+  getUnActiveDriver() {
+    return this.driverService.getUADrivers();
+  }
+
   @Get(":id")
   @ApiOperation({ summary: "Get a driver by ID" })
+  @ApiParam({ name: "id", description: "Driver ID" })
   @ApiResponse({
     status: 200,
     description: "Return a driver by ID",
@@ -100,6 +174,7 @@ export class DriverController {
 
   @Patch(":id")
   @ApiOperation({ summary: "Update a driver" })
+  @ApiParam({ name: "id", description: "Driver ID" })
   @ApiResponse({
     status: 200,
     description: "Driver updated successfully",
@@ -111,6 +186,7 @@ export class DriverController {
 
   @Delete(":id")
   @ApiOperation({ summary: "Delete a driver" })
+  @ApiParam({ name: "id", description: "Driver ID" })
   @ApiResponse({
     status: 200,
     description: "Driver deleted successfully",

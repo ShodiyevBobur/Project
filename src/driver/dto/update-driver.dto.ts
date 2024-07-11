@@ -30,7 +30,7 @@ export class UpdateDriverDto {
   age?: number;
 
   @ApiProperty({
-    example: "+123456789",
+    example: "+998912345678",
     description: "The phone number of the driver",
   })
   @IsOptional()
@@ -58,12 +58,14 @@ export class UpdateDriverDto {
     description: "The password of the driver",
   })
   @IsOptional()
-  @IsStrongPassword({ minLength: 5 })
+  @IsString()
   password?: string;
 
   @ApiProperty({
-    example: 1000.5,
-    description: "The total balance of the driver",
+    example: 12345,
+    description: "The OTP code of the driver",
   })
-  total_balance?: number;
+  @IsOptional()
+  @IsNumberString()
+  otp_pass?: number;
 }

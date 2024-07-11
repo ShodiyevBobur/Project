@@ -3,7 +3,7 @@ import { IsNotEmpty, IsPhoneNumber } from "class-validator";
 
 export class LoginDriverDto {
   @ApiProperty({
-    example: "+123456789",
+    example: "+998912345678",
     description: "The phone number of the driver",
   })
   @IsNotEmpty()

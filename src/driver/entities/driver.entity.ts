@@ -71,12 +71,13 @@ export class Driver extends Model<Driver> {
   prava: string;
 
   @ApiProperty({
-    example: 1000.5,
+    example: 1000,
     description: "The total balance of the driver",
   })
   @Column({
-    type: DataType.FLOAT,
+    type: DataType.INTEGER,
     allowNull: false,
+    defaultValue: 0,
   })
   total_balance: number;
 
