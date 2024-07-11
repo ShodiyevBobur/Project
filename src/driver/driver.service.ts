@@ -13,7 +13,7 @@ import { Op } from "sequelize";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
-import { Response } from "express"; // Import Response from express
+import { Response } from "express";
 
 @Injectable()
 export class DriverService {
@@ -50,23 +50,31 @@ export class DriverService {
   async register(
     createDriverDto: CreateDriverDto,
     photo: Express.Multer.File,
-    certificate: Express.Multer.File
+    prava: Express.Multer.File
   ) {
+    const parol: string = "352E32";
     const findDriver = await this.driverRepo.findOne({
       where: { phone: createDriverDto.phone },
     });
     if (findDriver) throw new BadRequestException("Driver already exist!");
-    if (!photo) throw new BadRequestException("Photo is required!");
-    if (!certificate)
-      throw new BadRequestException("certificate photo is required!");
+
+    if (!photo || !prava)
+      throw new BadRequestException("photos are is requirred!");
+
+    if (!createDriverDto.otp_pass || createDriverDto.otp_pass != parol)
+      throw new BadRequestException("Invalid otp");
+
     const img = (await this.cloudinaryService.uploadImage(photo)).url;
-    const cer = (await this.cloudinaryService.uploadImage(certificate)).url;
+    const img1 = (await this.cloudinaryService.uploadImage(prava)).url;
 
-    createDriverDto.photo = img;
-    createDriverDto.prava = cer;
     createDriverDto.password = await bcrypt.hash(createDriverDto.password, 7);
+    delete createDriverDto.otp_pass;
 
-    const driver = await this.driverRepo.create(createDriverDto);
+    const driver = await this.driverRepo.create({
+      photo: img,
+      prava: img1,
+      ...createDriverDto,
+    });
 
     const tokens = await this.getTokens(driver);
     const hashed_refresh_token = await bcrypt.hash(tokens.refreshToken, 7);
@@ -76,7 +84,7 @@ export class DriverService {
 
     return {
       message: "Driver registered successfully",
-      driver,
+      id: driver.id,
       tokens,
     };
   }
@@ -153,6 +161,13 @@ export class DriverService {
     const driver = await this.driverRepo.findByPk(id);
     if (!driver) throw new NotFoundException("Driver not found!");
 
+    if (updateDriverDto.password) {
+      const isMatch = await bcrypt.compare(
+        updateDriverDto.password,
+        driver.password
+      );
+      if (!isMatch) throw new BadRequestException("Invalid password!");
+    }
     return this.driverRepo.update(updateDriverDto, { where: { id } });
   }
 

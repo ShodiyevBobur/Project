@@ -2,7 +2,7 @@ import { Column, Model, Table, DataType, HasOne } from "sequelize-typescript";
 import { ApiProperty } from "@nestjs/swagger";
 import { Balance } from "../../balance/entities/balance.entity";
 
-@Table
+@Table({ tableName: "drivers" })
 export class Driver extends Model<Driver> {
   @ApiProperty({
     example: 1,
@@ -48,7 +48,6 @@ export class Driver extends Model<Driver> {
   @ApiProperty({ example: "photo.jpg", description: "The photo of the driver" })
   @Column({
     type: DataType.STRING,
-    allowNull: false,
   })
   photo: string;
 
@@ -68,7 +67,6 @@ export class Driver extends Model<Driver> {
   })
   @Column({
     type: DataType.STRING,
-    allowNull: false,
   })
   prava: string;
 
@@ -96,8 +94,23 @@ export class Driver extends Model<Driver> {
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
+    defaultValue: false,
   })
   isActive: boolean;
+
+  @ApiProperty({
+    example: "Tashent",
+    description: "where from",
+  })
+  @Column({ type: DataType.STRING, allowNull: false })
+  from: string;
+
+  @ApiProperty({
+    example: "Samarkand",
+    description: "where to",
+  })
+  @Column({ type: DataType.STRING, allowNull: false })
+  to: string;
 
   @ApiProperty({
     example: "0594grjoitjrgijgrjjfrb",
@@ -107,7 +120,4 @@ export class Driver extends Model<Driver> {
     type: DataType.STRING,
   })
   hashed_refresh_token: string;
-
-  @HasOne(() => Balance)
-  balance: Balance;
 }

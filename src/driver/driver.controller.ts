@@ -11,16 +11,25 @@ import {
   UploadedFile,
   UseInterceptors,
   UploadedFiles,
+  Put,
 } from "@nestjs/common";
 import { DriverService } from "./driver.service";
 import { CreateDriverDto } from "./dto/create-driver.dto";
 import { UpdateDriverDto } from "./dto/update-driver.dto";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 import { Driver } from "./entities/driver.entity";
 import { LoginDriverDto } from "./dto/login-driver.dto";
 import { Response } from "express";
-import { FilesInterceptor } from "@nestjs/platform-express";
-import { multerOptions } from "../decorators/multer.config";
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+  FilesInterceptor,
+} from "@nestjs/platform-express";
 
 @ApiTags("driver")
 @Controller("driver")
@@ -28,7 +37,12 @@ export class DriverController {
   constructor(private readonly driverService: DriverService) {}
 
   @Post("register")
-  @UseInterceptors(FilesInterceptor("files", 2, multerOptions))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: "photo", maxCount: 1 },
+      { name: "prava", maxCount: 1 },
+    ])
+  )
   @ApiOperation({ summary: "Register a new driver" })
   @ApiResponse({
     status: 201,
@@ -37,10 +51,12 @@ export class DriverController {
   })
   create(
     @Body() createDriverDto: CreateDriverDto,
-    @UploadedFiles() files: Express.Multer.File[]
+    @UploadedFiles()
+    files: { photo?: Express.Multer.File[]; prava?: Express.Multer.File[] }
   ) {
-    const [photo, certificate] = files;
-    return this.driverService.register(createDriverDto, photo, certificate);
+    const photo = files.photo?.[0];
+    const prava = files.prava?.[0];
+    return this.driverService.register(createDriverDto, photo, prava);
   }
 
   @Post("login")

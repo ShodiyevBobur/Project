@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import {
   IsNotEmpty,
   IsNumber,
+  IsNumberString,
   IsPhoneNumber,
   IsString,
   IsStrongPassword,
@@ -25,7 +26,7 @@ export class CreateDriverDto {
 
   @ApiProperty({ example: 30, description: "The age of the driver" })
   @IsNotEmpty()
-  @IsNumber()
+  @IsNumberString()
   age: number;
 
   @ApiProperty({
@@ -36,11 +37,6 @@ export class CreateDriverDto {
   @IsPhoneNumber("UZ")
   phone: string;
 
-  @ApiProperty({ example: "photo.jpg", description: "The photo of the driver" })
-  @IsNotEmpty()
-  @IsString()
-  photo: string;
-
   @ApiProperty({
     example: "A1234567",
     description: "The passport number of the driver",
@@ -50,19 +46,27 @@ export class CreateDriverDto {
   passport: string;
 
   @ApiProperty({
-    example: "image",
-    description: "The driving license photo of the driver",
+    example: "Tashent",
+    description: "where from",
   })
   @IsNotEmpty()
   @IsString()
-  prava: string;
+  from: string;
+
+  @ApiProperty({
+    example: "Samarkand",
+    description: "where to",
+  })
+  @IsNotEmpty()
+  @IsString()
+  to: string;
 
   @ApiProperty({
     example: "9034gqngr",
     description: "The password of the driver",
   })
   @IsNotEmpty()
-  @IsStrongPassword({ minLength: 5 })
+  @IsString()
   password: string;
 
   @ApiProperty({
@@ -70,4 +74,9 @@ export class CreateDriverDto {
     description: "The total balance of the driver",
   })
   total_balance: number;
+  @ApiProperty({
+    example: 130345,
+    description: "The otp code of the driver",
+  })
+  otp_pass: string;
 }

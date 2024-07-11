@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import {
   IsNumber,
+  IsNumberString,
   IsOptional,
   IsPhoneNumber,
   IsString,
@@ -25,7 +26,7 @@ export class UpdateDriverDto {
 
   @ApiProperty({ example: 30, description: "The age of the driver" })
   @IsOptional()
-  @IsNumber()
+  @IsNumberString()
   age?: number;
 
   @ApiProperty({
@@ -36,24 +37,21 @@ export class UpdateDriverDto {
   @IsPhoneNumber("UZ")
   phone?: string;
 
-  @ApiProperty({ example: "photo.jpg", description: "The photo of the driver" })
+  @ApiProperty({
+    example: "Tashent",
+    description: "where from",
+  })
   @IsOptional()
   @IsString()
-  photo?: string;
+  from?: string;
 
   @ApiProperty({
-    example: "A1234567",
-    description: "The passport number of the driver",
+    example: "Samarkand",
+    description: "where to",
   })
   @IsOptional()
-  @IsUzbekPassportNumber()
-  passport?: string;
-
-  @ApiProperty({
-    example: "image",
-    description: "The driving license photo of the driver",
-  })
-  prava?: string;
+  @IsString()
+  to?: string;
 
   @ApiProperty({
     example: "9034gqngr",

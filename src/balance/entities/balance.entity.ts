@@ -1,4 +1,10 @@
-import { Column, DataType, Table } from "sequelize-typescript";
+import {
+  BelongsTo,
+  Column,
+  DataType,
+  ForeignKey,
+  Table,
+} from "sequelize-typescript";
 
 @Table
 export class Balance {
@@ -9,4 +15,7 @@ export class Balance {
 
   @Column({ type: DataType.STRING, allowNull: false })
   transfer_type: string;
+
+  @Column({ type: DataType.INTEGER, allowNull: false })
+  driverId: number;
 }
