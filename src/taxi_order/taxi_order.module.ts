@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TaxiOrderService } from "./taxi_order.service";
 import { TaxiOrderController } from "./taxi_order.controller";
-import { TaxiOrder } from "./entities/taxi_order.model";
+import { TaxiOrder } from "./model/taxi_order.model";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { JwtModule } from "@nestjs/jwt";
 
