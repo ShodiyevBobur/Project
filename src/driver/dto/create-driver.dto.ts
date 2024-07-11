@@ -5,15 +5,10 @@ import {
   IsNumberString,
   IsPhoneNumber,
   IsString,
-  IsStrongPassword,
 } from "class-validator";
 import { IsUzbekPassportNumber } from "../../decorators/validator/IsUzbekPassportNumber";
 
 export class CreateDriverDto {
-  @ApiProperty({
-    example: 1,
-    description: "The unique identifier of the driver",
-  })
   @ApiProperty({ example: "John", description: "The first name of the driver" })
   @IsNotEmpty()
   @IsString()
@@ -30,7 +25,7 @@ export class CreateDriverDto {
   age: number;
 
   @ApiProperty({
-    example: "+123456789",
+    example: "+998912345678",
     description: "The phone number of the driver",
   })
   @IsNotEmpty()
@@ -38,7 +33,7 @@ export class CreateDriverDto {
   phone: string;
 
   @ApiProperty({
-    example: "A1234567",
+    example: "AS1234567",
     description: "The passport number of the driver",
   })
   @IsNotEmpty()
@@ -46,8 +41,8 @@ export class CreateDriverDto {
   passport: string;
 
   @ApiProperty({
-    example: "Tashent",
-    description: "where from",
+    example: "Tashkent",
+    description: "The city where the driver is from",
   })
   @IsNotEmpty()
   @IsString()
@@ -55,7 +50,7 @@ export class CreateDriverDto {
 
   @ApiProperty({
     example: "Samarkand",
-    description: "where to",
+    description: "The city where the driver is going to",
   })
   @IsNotEmpty()
   @IsString()
@@ -70,13 +65,15 @@ export class CreateDriverDto {
   password: string;
 
   @ApiProperty({
-    example: 1000.5,
-    description: "The total balance of the driver",
+    example: 12345,
+    description: "The OTP code of the driver",
   })
-  total_balance: number;
-  @ApiProperty({
-    example: 130345,
-    description: "The otp code of the driver",
-  })
-  otp_pass: string;
+  @IsNumberString()
+  otp_pass: number;
+
+  @ApiProperty({ type: "string", format: "binary" })
+  photo: any;
+
+  @ApiProperty({ type: "string", format: "binary" })
+  prava: any;
 }

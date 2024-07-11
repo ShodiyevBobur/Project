@@ -14,6 +14,7 @@ import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { Response } from "express";
+import { SummaDto } from "./dto/summa-driver.dto";
 
 @Injectable()
 export class DriverService {
@@ -50,19 +51,19 @@ export class DriverService {
   async register(
     createDriverDto: CreateDriverDto,
     photo: Express.Multer.File,
-    prava: Express.Multer.File
+    prava: Express.Multer.File,
+    res: Response
   ) {
-    const parol: string = "352E32";
+    const parol: number = 12345;
     const findDriver = await this.driverRepo.findOne({
       where: { phone: createDriverDto.phone },
     });
-    if (findDriver) throw new BadRequestException("Driver already exist!");
+    if (findDriver) throw new BadRequestException("Driver already exists!");
 
-    if (!photo || !prava)
-      throw new BadRequestException("photos are is requirred!");
+    if (!photo || !prava) throw new BadRequestException("Photos are required!");
 
     if (!createDriverDto.otp_pass || createDriverDto.otp_pass != parol)
-      throw new BadRequestException("Invalid otp");
+      throw new BadRequestException({ message: createDriverDto.otp_pass });
 
     const img = (await this.cloudinaryService.uploadImage(photo)).url;
     const img1 = (await this.cloudinaryService.uploadImage(prava)).url;
@@ -81,6 +82,12 @@ export class DriverService {
 
     driver.hashed_refresh_token = hashed_refresh_token;
     await driver.save();
+
+    // Set refresh_token cookie
+    res.cookie("refresh_token", tokens.refreshToken, {
+      maxAge: 15 * 24 * 60 * 60 * 1000, // Example: 15 days
+      httpOnly: true,
+    });
 
     return {
       message: "Driver registered successfully",
@@ -120,6 +127,8 @@ export class DriverService {
       maxAge: 15 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
+    delete updatedUser[1][0].password;
+    delete updatedUser[1][0].isActive;
 
     const response = {
       message: "Admin logged in",
@@ -127,6 +136,67 @@ export class DriverService {
       tokens,
     };
     return response;
+  }
+
+  async getUADrivers() {
+    return this.driverRepo.findAll({ where: { isActive: false } });
+  }
+
+  async activeDriver(id: number) {
+    const findDriver = await this.driverRepo.findByPk(id);
+    if (!findDriver) throw new NotFoundException("Driver not found!");
+    findDriver.isActive = true;
+    findDriver.save();
+
+    return { message: "Driver succesfuly activated!" };
+  }
+
+  async unactiveDriver(id: number) {
+    const findDriver = await this.driverRepo.findByPk(id);
+    if (!findDriver) throw new NotFoundException("Driver not found!");
+    findDriver.isActive = false;
+    findDriver.save();
+    console.log(findDriver);
+
+    return findDriver;
+  }
+
+  async addMoney(id: number, summaDto: SummaDto) {
+    const findDriver = await this.driverRepo.findByPk(id);
+    if (!findDriver) throw new NotFoundException("Driver not foudn!");
+    if (!summaDto.sum) throw new BadRequestException("Sum is required!");
+
+    findDriver.total_balance = findDriver.total_balance + summaDto.sum;
+    await findDriver.save();
+
+    delete findDriver.password;
+    delete findDriver.hashed_refresh_token;
+
+    return {
+      message: "Succesfuly added sum",
+      data: findDriver,
+    };
+  }
+
+  async removeMoney(id: number, summaDto: SummaDto) {
+    const findDriver = await this.driverRepo.findByPk(id);
+    if (!findDriver) throw new NotFoundException("Driver not foudn!");
+    if (!summaDto.sum) throw new BadRequestException("Sum is required!");
+
+    if (summaDto.sum > findDriver.total_balance)
+      throw new BadRequestException(
+        "The given amount is more than the balance amount"
+      );
+    findDriver.total_balance = findDriver.total_balance - summaDto.sum;
+    await findDriver.save();
+
+    delete findDriver.password;
+    delete findDriver.hashed_refresh_token;
+
+    return {
+      message: "Succesfuly added sum",
+      data: findDriver,
+    };
   }
 
   async findAll(searchParams: {
@@ -160,12 +230,17 @@ export class DriverService {
   async update(id: number, updateDriverDto: UpdateDriverDto) {
     const driver = await this.driverRepo.findByPk(id);
     if (!driver) throw new NotFoundException("Driver not found!");
+    const parol = 12345;
 
     if (updateDriverDto.password) {
       const isMatch = await bcrypt.compare(
         updateDriverDto.password,
         driver.password
       );
+      if (updateDriverDto.phone) {
+        if (!updateDriverDto.otp_pass || updateDriverDto.otp_pass !== parol)
+          throw new BadRequestException("Invalid otp password");
+      }
       if (!isMatch) throw new BadRequestException("Invalid password!");
     }
     return this.driverRepo.update(updateDriverDto, { where: { id } });
