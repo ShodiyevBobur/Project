@@ -1,6 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, DataType, Model, Table } from "sequelize-typescript";
-
+import {
+  BelongsTo,
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  Table,
+} from "sequelize-typescript";
+import { Region } from "../../region/model/region.model";
 
 interface ICreateDistrictAttr {
   name: string;
@@ -10,7 +17,7 @@ interface ICreateDistrictAttr {
 export class District extends Model<District, ICreateDistrictAttr> {
   @ApiProperty({
     example: 1,
-    description: "taxi order ID unikal raqami",
+    description: " ID unikal raqami",
   })
   @Column({
     type: DataType.INTEGER,
@@ -19,15 +26,17 @@ export class District extends Model<District, ICreateDistrictAttr> {
   })
   id: number;
 
-
-  @ApiProperty({ example: 1, description: "Taxi order Id unique" })
+  @ApiProperty({ example: "Yashnaobod", description: "District name" })
   @Column({ type: DataType.STRING })
   name: string;
 
-
-  @ApiProperty({ example: 1, description: "Taxi order Id unique" })
-  @Column({ type: DataType.INTEGER })
+  @ForeignKey(() => Region)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
   region_id: number;
 
-
+  @BelongsTo(() => Region)
+  region: Region;
 }
