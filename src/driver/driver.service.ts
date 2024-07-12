@@ -15,17 +15,19 @@ import * as bcrypt from "bcrypt";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { Response } from "express";
 import { SummaDto } from "./dto/summa-driver.dto";
+import { Region } from "../region/model/region.model";
+import { from } from "rxjs";
 
 @Injectable()
 export class DriverService {
   constructor(
     @InjectModel(Driver) private driverRepo: typeof Driver,
+    @InjectModel(Region) private regionRepo: typeof Region,
     private jwtService: JwtService,
     private cloudinaryService: CloudinaryService
   ) {}
 
   // Get tokens service
-
   async getTokens(driver: Driver) {
     const payload = {
       id: driver.id,
@@ -48,6 +50,8 @@ export class DriverService {
     };
   }
 
+  // register driver
+
   async register(
     createDriverDto: CreateDriverDto,
     photo: Express.Multer.File,
@@ -65,6 +69,16 @@ export class DriverService {
     if (!createDriverDto.otp_pass || createDriverDto.otp_pass != parol)
       throw new BadRequestException({ message: createDriverDto.otp_pass });
 
+    const from = await this.regionRepo.findOne({
+      where: { name: createDriverDto.from },
+    });
+
+    const to = await this.regionRepo.findOne({
+      where: { name: createDriverDto.to },
+    });
+console.log(to, from);
+
+    if (!from || !to) throw new NotFoundException("Region notfound");
     const img = (await this.cloudinaryService.uploadImage(photo)).url;
     const img1 = (await this.cloudinaryService.uploadImage(prava)).url;
 
@@ -95,6 +109,8 @@ export class DriverService {
       tokens,
     };
   }
+
+  // login driver
 
   async login(loginDriverDto: LoginDriverDto, res: Response) {
     const find = await this.driverRepo.findOne({
@@ -138,9 +154,12 @@ export class DriverService {
     return response;
   }
 
+  // get all admin isActive == false
   async getUADrivers() {
     return this.driverRepo.findAll({ where: { isActive: false } });
   }
+
+  // activate driver
 
   async activeDriver(id: number) {
     const findDriver = await this.driverRepo.findByPk(id);
@@ -151,6 +170,8 @@ export class DriverService {
     return { message: "Driver succesfuly activated!" };
   }
 
+  // unactivate driver
+
   async unactiveDriver(id: number) {
     const findDriver = await this.driverRepo.findByPk(id);
     if (!findDriver) throw new NotFoundException("Driver not found!");
@@ -160,6 +181,8 @@ export class DriverService {
 
     return findDriver;
   }
+
+  // add balance
 
   async addMoney(id: number, summaDto: SummaDto) {
     const findDriver = await this.driverRepo.findByPk(id);
@@ -177,6 +200,8 @@ export class DriverService {
       data: findDriver,
     };
   }
+
+  // remove balance
 
   async removeMoney(id: number, summaDto: SummaDto) {
     const findDriver = await this.driverRepo.findByPk(id);
@@ -198,6 +223,8 @@ export class DriverService {
       data: findDriver,
     };
   }
+
+  // search driver
 
   async findAll(searchParams: {
     name?: string;
@@ -221,16 +248,32 @@ export class DriverService {
     });
   }
 
+  // find by id driver
+
   async findOne(id: number) {
     const driver = await this.driverRepo.findByPk(id);
     if (!driver) throw new NotFoundException("Driver not found!");
     return driver;
   }
 
+  // update driver
+
   async update(id: number, updateDriverDto: UpdateDriverDto) {
     const driver = await this.driverRepo.findByPk(id);
     if (!driver) throw new NotFoundException("Driver not found!");
     const parol = 12345;
+    if (updateDriverDto.from) {
+      const from = await this.regionRepo.findOne({
+        where: { name: updateDriverDto.from },
+      });
+      if (!from) throw new NotFoundException("Region Not found");
+    }
+    if (updateDriverDto.to) {
+      const to = await this.regionRepo.findOne({
+        where: { name: updateDriverDto.to },
+      });
+      if (!to) throw new NotFoundException("Region Not found");
+    }
 
     if (updateDriverDto.password) {
       const isMatch = await bcrypt.compare(
@@ -245,6 +288,8 @@ export class DriverService {
     }
     return this.driverRepo.update(updateDriverDto, { where: { id } });
   }
+
+  /// remove driver
 
   async remove(id: number) {
     const driver = await this.driverRepo.findByPk(id);

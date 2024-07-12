@@ -74,7 +74,7 @@ export class DriverController {
     return this.driverService.login(loginDriverDto, res);
   }
 
-  @Put("activate/:id")
+  @Post("activate/:id")
   @ApiOperation({ summary: "Activate a driver" })
   @ApiParam({ name: "id", description: "Driver ID" })
   @ApiResponse({
