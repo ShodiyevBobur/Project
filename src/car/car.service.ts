@@ -1,26 +1,53 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCarDto } from './dto/create-car.dto';
-import { UpdateCarDto } from './dto/update-car.dto';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { CreateCarDto } from "./dto/create-car.dto";
+import { UpdateCarDto } from "./dto/update-car.dto";
+import { InjectModel } from "@nestjs/sequelize";
+import { Car } from "./entities/car.entity";
+
 
 @Injectable()
-export class CarService {
-  create(createCarDto: CreateCarDto) {
-    return 'This action adds a new car';
+export class CarsService {
+  constructor(
+    @InjectModel(Car) private readonly carRepo: typeof Car,
+  ) {}
+
+  async create(createCarDto: CreateCarDto) {
+    const newCar = await this.carRepo.create(createCarDto);
+
+    return { message: "Create new car successfully", car: newCar };
   }
 
   findAll() {
-    return `This action returns all car`;
+    return this.carRepo.findAll({ include: { all: true } });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} car`;
+  async findOne(id: number) {
+    const car = await this.carRepo.findByPk(id, { include: { all: true } });
+    if (!car) {
+      throw new NotFoundException("car not found");
+    }
+    return car;
   }
 
-  update(id: number, updateCarDto: UpdateCarDto) {
-    return `This action updates a #${id} car`;
+  async update(id: number, updateCarDto: UpdateCarDto) {
+    const car = await this.carRepo.findByPk(id);
+    if (!car) {
+      throw new NotFoundException(`Car with ID ${id} not found`);
+    }
+
+    const updateCar = await car.update(updateCarDto);
+
+    return {
+      message: `Car with ID ${id} updated successfully`,
+      car: updateCar,
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} car`;
+  async remove(id: number) {
+    const rowsAffected = await this.carRepo.destroy({ where: { id } });
+    if (rowsAffected === 0) {
+      throw new NotFoundException("Car not found");
+    }
+    return { message: "Deleted Car" };
   }
 }

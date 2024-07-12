@@ -1,34 +1,72 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { CarService } from './car.service';
-import { CreateCarDto } from './dto/create-car.dto';
-import { UpdateCarDto } from './dto/update-car.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from "@nestjs/common";
+import {
+  ApiTags,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+  ApiBadRequestResponse,
+  ApiInternalServerErrorResponse,
+  ApiParam,
+  ApiBody,
+} from "@nestjs/swagger";
+import { CarsService } from "./car.service";
+import { CreateCarDto } from "./dto/create-car.dto";
+import { UpdateCarDto } from "./dto/update-car.dto";
+import { Car } from "./entities/car.entity";
+import { AdminGuard } from "src/guards/admin.guard";
 
-@Controller('car')
-export class CarController {
-  constructor(private readonly carService: CarService) {}
+@ApiTags("Cars")
+@Controller("car")
+export class CarsController {
+  constructor(private readonly carsService: CarsService) {}
 
   @Post()
+  @ApiOkResponse({ description: "Successfully created car", type: Car })
+  @ApiBadRequestResponse({ description: "Invalid data provided" })
+  @ApiInternalServerErrorResponse({ description: "Internal server error" })
   create(@Body() createCarDto: CreateCarDto) {
-    return this.carService.create(createCarDto);
+    return this.carsService.create(createCarDto);
   }
 
   @Get()
+  @ApiOkResponse({ description: "Successfully retrieved cars", type: [Car] })
+  @ApiInternalServerErrorResponse({ description: "Internal server error" })
   findAll() {
-    return this.carService.findAll();
+    return this.carsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.carService.findOne(+id);
+  @Get(":id")
+  @ApiOkResponse({ description: "Successfully retrieved car", type: Car })
+  @ApiNotFoundResponse({ description: "Car not found" })
+  @ApiParam({ name: "id", description: "Car ID" })
+  findOne(@Param("id") id: string) {
+    return this.carsService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCarDto: UpdateCarDto) {
-    return this.carService.update(+id, updateCarDto);
+  @Patch(":id")
+  @ApiOkResponse({ description: "Successfully updated car", type: Car })
+  @ApiNotFoundResponse({ description: "Car not found" })
+  @ApiBadRequestResponse({ description: "Invalid data provided" })
+  @ApiParam({ name: "id", description: "Car ID" })
+  @ApiBody({ type: UpdateCarDto })
+  update(@Param("id") id: string, @Body() updateCarDto: UpdateCarDto) {
+    return this.carsService.update(+id, updateCarDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.carService.remove(+id);
+  @Delete(":id")
+  @ApiOkResponse({ description: "Successfully deleted car" })
+  @ApiNotFoundResponse({ description: "Car not found" })
+  @ApiInternalServerErrorResponse({ description: "Internal server error" })
+  @ApiParam({ name: "id", description: "Car ID" })
+  remove(@Param("id") id: string) {
+    return this.carsService.remove(+id);
   }
 }
