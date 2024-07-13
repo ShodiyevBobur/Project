@@ -1,55 +1,28 @@
-curl --location 'notify.eskiz.uz/api/auth/login' --form 'email="abdullohh745@gmail.com"' --form 'password="8dDgBZAQmonwuuR8vo0rrKwJvST8Arxt0sLNPLwM"'
-
+curl --location 'notify.eskiz.uz/api/auth/login' --form 'email="mamiroffxojiakbar@gmail.com"' --form 'password="WAepY6I4M3FntxBRV8sG5XTDUshjswIZ3ajq4XGM"'
 {
-
-    "message":"token_generated",
-
-    "data":{
-
-        "token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjU0MTUsInJvbGUiOm51bGwsImRhdGEiOnsiaWQiOjU0MTUsIm5hbWUiOiJNYW5zdXJvdiBYdXNhbmJveSBUdXJzdW5vdmljaCIsImVtYWlsIjoiaHVzYW5ib3ltYW5zdXJvdjc4QGdtYWlsLmNvbSIsInJvbGUiOm51bGwsImFwaV90b2tlbiI6bnVsbCwic3RhdHVzIjoiaW5hY3RpdmUiLCJzbXNfYXBpX2xvZ2luIjoiZXNraXoyIiwic21zX2FwaV9wYXNzd29yZCI6ImUkJGsheiIsInV6X3ByaWNlIjo1MCwidWNlbGxfcHJpY2UiOjExNSwidGVzdF91Y2VsbF9wcmljZSI6bnVsbCwiYmFsYW5jZSI6NTAwMCwiaXNfdmlwIjowLCJob3N0Ijoic2VydmVyMSIsImNyZWF0ZWRfYXQiOiIyMDIzLTEwLTMwVDA3OjA0OjU4LjAwMDAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyMy0xMC0zMFQwNzowNDo1OC4wMDAwMDBaIiwid2hpdGVsaXN0IjpudWxsLCJoYXNfcGVyZmVjdHVtIjpudWxsLCJiZWVsaW5lX3ByaWNlIjo1MH0sImlhdCI6MTY5ODY1MDAwNSwiZXhwIjoxNzAxMjQyMDA1fQ.Lm0kLsfI2J8GW5H8L0D7G3CbKP86ThE6vBCGzSdZhAs"
-
-        },
-
-    "token_type":"bearer"
-
+  "message": "token_generated",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjMzMjgxMDIsImlhdCI6MTcyMDczNjEwMiwicm9sZSI6InRlc3QiLCJzaWduIjoiOTk5ZjRhYzFlYWU1MTE1ZjBlNTc1M2RiZDljOGRkOWQxNmU5MjRiMjViMTJjOGI1Mzg2NDZkZDJiMGNhNzYzZCIsInN1YiI6Ijc4MjEifQ.yAVxN4dotoYzMms1vYY4nKEbh93g2DTXkWEgy81t9m8"
+  },
+  "token_type": "bearer"
 }%
-
-
 
 ----------------------------------------------------
 
-
-
 curl --location 'notify.eskiz.uz/api/message/sms/send' \
-
---header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTUwNTg4MDcsImlhdCI6MTcxMjQ2NjgwNywicm9sZSI6InRlc3QiLCJzaWduIjoiOWQ5ZmNhYTFiMzRiNDkwM2FiMzk2ZTJiYmJlOWRiYjUwYjYwYTMxMWFjODFiNjY5MzRkZWQwYzdjMmMzMmJjZiIsInN1YiI6IjU0MTUifQ.w59QzUzL9QjQPOn6KcQ3Lw5rvhCSyO_WDrN4Fcfyx04' \
-
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjMzMjgxMDIsImlhdCI6MTcyMDczNjEwMiwicm9sZSI6InRlc3QiLCJzaWduIjoiOTk5ZjRhYzFlYWU1MTE1ZjBlNTc1M2RiZDljOGRkOWQxNmU5MjRiMjViMTJjOGI1Mzg2NDZkZDJiMGNhNzYzZCIsInN1YiI6Ijc4MjEifQ.yAVxN4dotoYzMms1vYY4nKEbh93g2DTXkWEgy81t9m8' \
 --form 'mobile_phone="998935029009"' \
-
 --form 'message="Your verification code is: 1234"' \
-
 --form 'from="4546"'
 
-
-
 {
-
     "id":"d682f97a-264b-43a0-ab8d-5f9e41fffa4c",
-
     "status":"waiting",
-
     "message":"Waiting for SMS provider"
-
 }%  
 
-
-
 curl --location -g 'notify.eskiz.uz/api/templates' \
-
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTUwNTg4MDcsImlhdCI6MTcxMjQ2NjgwNywicm9sZSI6InRlc3QiLCJzaWduIjoiOWQ5ZmNhYTFiMzRiNDkwM2FiMzk2ZTJiYmJlOWRiYjUwYjYwYTMxMWFjODFiNjY5MzRkZWQwYzdjMmMzMmJjZiIsInN1YiI6IjU0MTUifQ.w59QzUzL9QjQPOn6KcQ3Lw5rvhCSyO_WDrN4Fcfyx04'
 
 
-
-
-
-curl --location 'notify.eskiz.uz/api/auth/login' --form 'email="abdullohh745@gmail.com"' --form 'password="8dDgBZAQmonwuuR8vo0rrKwJvST8Arxt0sLNPLwM"'
+curl --location 'notify.eskiz.uz/api/auth/login' --form 'email="mamiroffxojiakbar@gmail.com"' --form 'password="WAepY6I4M3FntxBRV8sG5XTDUshjswIZ3ajq4XGM"'

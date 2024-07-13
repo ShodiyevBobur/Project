@@ -3,8 +3,11 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 
 import { SequelizeModule } from "@nestjs/sequelize";
+
+import { OtpModule } from "./otp/otp.module";
+import { SmsModule } from "./sms/sms.module";
 import { CloudinaryModule } from "./cloudinary/cloudinary.module";
-import { ClientModule } from "./client/client.module";
+import { ClientModule } from "./model/client.module";
 import { AdminModule } from "./admin/admin.module";
 import { RegionModule } from "./region/region.module";
 import { DistrictsModule } from "./districts/districts.module";
@@ -14,8 +17,6 @@ import { BalanceModule } from "./balance/balance.module";
 import { DriverModule } from "./driver/driver.module";
 import { CarDriverModule } from "./car_driver/car_driver.module";
 import { CarModule } from "./car/car.module";
-import { OtpModule } from "./otp/otp.module";
-import { SmsModule } from "./sms/sms.module";
 
 @Module({
   imports: [
