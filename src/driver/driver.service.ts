@@ -37,11 +37,11 @@ export class DriverService {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
         secret: process.env.ACCESS_TOKEN_KEY_DR,
-        expiresIn: process.env.ACCESS_TOKEN_TIME_DR,
+        expiresIn: process.env.ACCESS_TOKEN_TIME,
       }),
       this.jwtService.signAsync(payload, {
         secret: process.env.REFRESH_TOKEN_KEY_DR,
-        expiresIn: process.env.REFRESH_TOKEN_TIME_DR,
+        expiresIn: process.env.REFRESH_TOKEN_TIME,
       }),
     ]);
     return {
