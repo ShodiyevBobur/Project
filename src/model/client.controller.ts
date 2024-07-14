@@ -26,6 +26,7 @@ import {
 import { UpdatePasswordAdminDto } from "./dto/updatePassword.dto";
 import { CookieGetter } from "src/decorators/cookie_getter.decorator";
 import { RegisterClientDto } from "./dto/regester-client.dto";
+import { FindUserDto } from "./dto/find-user.dto";
 
 @ApiTags("client")
 @Controller("client")
@@ -60,6 +61,12 @@ export class ClientController {
     @Res({ passthrough: true }) res: Response
   ) {
     return this.clientService.askInfo(registerClientDto, res);
+  }
+
+  @ApiOperation({ summary: "Client find phone and name" })
+  @Post("findByParams")
+  findByParams(@Body() findUserDto: FindUserDto) {
+    return this.clientService.findUSerByParams(findUserDto);
   }
 
   @HttpCode(200)

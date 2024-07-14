@@ -11,7 +11,7 @@ import { UpdateClientDto } from "./dto/update-client.dto";
 import { InjectModel } from "@nestjs/sequelize";
 import { Client } from "./entities/client.entity";
 import { Otp } from "src/otp/model/otp.model";
-import { JsonWebTokenError, JwtService } from "@nestjs/jwt";
+import { JwtService } from "@nestjs/jwt";
 import { SmsService } from "src/sms/sms.service";
 import * as otpgen from "otp-generator";
 import { VerifyOtpDto } from "./dto/verify-otp.dto";
@@ -23,6 +23,8 @@ import * as bcrypt from "bcrypt";
 import { LoginClientDto } from "./dto/login-client.dto";
 import { RegisterClientDto } from "./dto/regester-client.dto";
 import { UpdatePasswordAdminDto } from "./dto/updatePassword.dto";
+import { FindUserDto } from "./dto/find-user.dto";
+import { Op } from "sequelize";
 
 @Injectable()
 export class ClientService {
@@ -340,6 +342,25 @@ export class ClientService {
     } catch (error) {
       throw new BadRequestException("clients No");
     }
+  }
+
+  async findUSerByParams(findUserDto: FindUserDto) {
+    const where = {};
+    if (findUserDto.name) {
+      where["full_name"] = {
+        [Op.like]: `%${findUserDto.name}%`,
+      };
+    }
+
+    if (findUserDto.phone) {
+      where["phone"] = {
+        [Op.like]: `%${findUserDto.phone}%`,
+      };
+    }
+
+    const users = await this.clientRepo.findAll({ where });
+    if (users.length == 0) throw new BadRequestException("User not found");
+    return users;
   }
 
   async findOneClient(id: number) {
