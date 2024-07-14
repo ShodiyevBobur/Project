@@ -41,22 +41,6 @@ export class CreateDriverDto {
   passport: string;
 
   @ApiProperty({
-    example: "Tashkent",
-    description: "The city where the driver is from",
-  })
-  @IsNotEmpty()
-  @IsString()
-  from: string;
-
-  @ApiProperty({
-    example: "Samarkand",
-    description: "The city where the driver is going to",
-  })
-  @IsNotEmpty()
-  @IsString()
-  to: string;
-
-  @ApiProperty({
     example: "9034gqngr",
     description: "The password of the driver",
   })

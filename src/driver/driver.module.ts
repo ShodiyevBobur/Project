@@ -6,10 +6,11 @@ import { Driver } from "./entities/driver.entity";
 import { JwtModule } from "@nestjs/jwt";
 import { CloudinaryModule } from "../cloudinary/cloudinary.module";
 import { Region } from "../region/model/region.model";
+import { TaxiOrder } from "../taxi_order/model/taxi_order.model";
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([Driver, Region]),
+    SequelizeModule.forFeature([Driver, Region, TaxiOrder]),
     JwtModule,
     CloudinaryModule,
   ],
