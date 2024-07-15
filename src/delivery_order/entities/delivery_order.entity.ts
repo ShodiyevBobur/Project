@@ -18,7 +18,10 @@ interface IDeliveryOrderInterface {
 }
 
 @Table({ tableName: "delivery-order" })
-export class DeliveryOrder extends Model<DeliveryOrder, IDeliveryOrderInterface> {
+export class DeliveryOrder extends Model<
+  DeliveryOrder,
+  IDeliveryOrderInterface
+> {
   @ApiProperty({ example: 1, description: "ID of the starting district" })
   @Column({
     type: DataType.INTEGER,
@@ -128,4 +131,16 @@ export class DeliveryOrder extends Model<DeliveryOrder, IDeliveryOrderInterface>
     allowNull: false,
   })
   type: string;
+  @ApiProperty({ example: "Regular", description: "distance of delivery" })
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  distance: string;
+  @ApiProperty({ example: "Regular", description: "duration of delivery" })
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  duration: string;
 }
