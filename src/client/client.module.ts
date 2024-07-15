@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ClientService } from "./client.service";
 import { ClientController } from "./client.controller";
-import { Client } from "./entities/client.entity";
+import { Client } from "./model/client.entity";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { JwtModule } from "@nestjs/jwt";
 import { OtpModule } from "src/otp/otp.module";

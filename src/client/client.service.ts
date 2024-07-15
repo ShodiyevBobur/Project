@@ -9,7 +9,7 @@ import {
 import { CreateClientDto } from "./dto/create-client.dto";
 import { UpdateClientDto } from "./dto/update-client.dto";
 import { InjectModel } from "@nestjs/sequelize";
-import { Client } from "./entities/client.entity";
+import { Client } from "./model/client.entity";
 import { Otp } from "src/otp/model/otp.model";
 import { JwtService } from "@nestjs/jwt";
 import { SmsService } from "src/sms/sms.service";
@@ -187,8 +187,8 @@ export class ClientService {
   }
 
   async login(loginclientDto: LoginClientDto, res: Response) {
-    const { name, password } = loginclientDto;
-    const client = await this.clientRepo.findOne({ where: { name } });
+    const { phone, password } = loginclientDto;
+    const client = await this.clientRepo.findOne({ where: { phone } });
 
     if (!client) {
       throw new BadRequestException("User not found");
@@ -270,6 +270,7 @@ export class ClientService {
       const userdata = await this.jwtService.verify(refreshToken, {
         secret: process.env.REFRESH_TOKEN_KEY,
       });
+      console.log(userdata);
 
       if (!userdata) {
         throw new ForbiddenException("Invalid token");
@@ -347,7 +348,7 @@ export class ClientService {
   async findUSerByParams(findUserDto: FindUserDto) {
     const where = {};
     if (findUserDto.name) {
-      where["full_name"] = {
+      where["name"] = {
         [Op.like]: `%${findUserDto.name}%`,
       };
     }

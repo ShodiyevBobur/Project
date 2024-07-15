@@ -7,5 +7,5 @@ export class LoginClientDto {
 
   @IsString()
   @IsNotEmpty()
-  name: string;
+  phone: string;
 }

@@ -64,7 +64,7 @@ export class ClientController {
   }
 
   @ApiOperation({ summary: "Client find phone and name" })
-  @Post("findByParams")
+  @Post("search")
   findByParams(@Body() findUserDto: FindUserDto) {
     return this.clientService.findUSerByParams(findUserDto);
   }

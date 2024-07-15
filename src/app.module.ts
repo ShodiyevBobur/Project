@@ -7,7 +7,7 @@ import { SequelizeModule } from "@nestjs/sequelize";
 import { OtpModule } from "./otp/otp.module";
 import { SmsModule } from "./sms/sms.module";
 import { CloudinaryModule } from "./cloudinary/cloudinary.module";
-import { ClientModule } from "./model/client.module";
+import { ClientModule } from "./client/client.module";
 import { AdminModule } from "./admin/admin.module";
 import { RegionModule } from "./region/region.module";
 import { DistrictsModule } from "./districts/districts.module";
