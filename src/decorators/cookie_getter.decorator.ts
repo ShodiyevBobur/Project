@@ -2,15 +2,15 @@ import {
   ExecutionContext,
   UnauthorizedException,
   createParamDecorator,
-} from '@nestjs/common';
+} from "@nestjs/common";
 
-export const Cookiegetter = createParamDecorator(
-  async (data: string, context: ExecutionContext): Promise<String> => {
+export const CookieGetter = createParamDecorator(
+  async (data: string, context: ExecutionContext): Promise<string> => {
     const request = context.switchToHttp().getRequest();
-    const refresh_token = request.cookies[data];
-    if (!refresh_token) {
-      throw new UnauthorizedException('Token is not found');
+    const refreshToken = request.cookies.refresh_token;
+    if (!refreshToken) {
+      throw new UnauthorizedException("Token is not founds");
     }
-    return refresh_token;
-  },
+    return refreshToken;
+  }
 );
