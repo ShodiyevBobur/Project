@@ -17,14 +17,17 @@ import { Response } from "express";
 import { SummaDto } from "./dto/summa-driver.dto";
 import { Region } from "../region/model/region.model";
 import { from } from "rxjs";
+import { FindOrderDto } from "./dto/find-order.dto";
+import { TaxiOrder } from "../taxi_order/model/taxi_order.model";
 
 @Injectable()
 export class DriverService {
   constructor(
     @InjectModel(Driver) private driverRepo: typeof Driver,
     @InjectModel(Region) private regionRepo: typeof Region,
+    @InjectModel(TaxiOrder) private orderRepo: typeof TaxiOrder,
     private jwtService: JwtService,
-    private cloudinaryService: CloudinaryService
+    private cloudinaryService: CloudinaryService,
   ) {}
 
   // Get tokens service
@@ -69,16 +72,6 @@ export class DriverService {
     if (!createDriverDto.otp_pass || createDriverDto.otp_pass != parol)
       throw new BadRequestException({ message: createDriverDto.otp_pass });
 
-    const from = await this.regionRepo.findOne({
-      where: { name: createDriverDto.from },
-    });
-
-    const to = await this.regionRepo.findOne({
-      where: { name: createDriverDto.to },
-    });
-console.log(to, from);
-
-    if (!from || !to) throw new NotFoundException("Region notfound");
     const img = (await this.cloudinaryService.uploadImage(photo)).url;
     const img1 = (await this.cloudinaryService.uploadImage(prava)).url;
 
@@ -262,18 +255,6 @@ console.log(to, from);
     const driver = await this.driverRepo.findByPk(id);
     if (!driver) throw new NotFoundException("Driver not found!");
     const parol = 12345;
-    if (updateDriverDto.from) {
-      const from = await this.regionRepo.findOne({
-        where: { name: updateDriverDto.from },
-      });
-      if (!from) throw new NotFoundException("Region Not found");
-    }
-    if (updateDriverDto.to) {
-      const to = await this.regionRepo.findOne({
-        where: { name: updateDriverDto.to },
-      });
-      if (!to) throw new NotFoundException("Region Not found");
-    }
 
     if (updateDriverDto.password) {
       const isMatch = await bcrypt.compare(
@@ -297,5 +278,24 @@ console.log(to, from);
 
     await driver.destroy();
     return "Successfuly deleted!";
+  }
+
+  // find order:
+
+  async findOrder(findOrderDto: FindOrderDto) {
+    const { from, to } = findOrderDto;
+    const orders = await this.orderRepo.findAll({
+      where: {
+        from_district_id: { [Op.eq]: from },
+        to_district_id: { [Op.eq]: to },
+      },
+      include: {all: true}
+    });
+
+    if (!orders.length) {
+      throw new NotFoundException("No orders found for the specified criteria");
+    }
+
+    return orders;
   }
 }

@@ -29,6 +29,8 @@ import { LoginDriverDto } from "./dto/login-driver.dto";
 import { Response } from "express";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import { SummaDto } from "./dto/summa-driver.dto";
+import { FindOrderDto } from "./dto/find-order.dto";
+import { TaxiOrder } from "../taxi_order/model/taxi_order.model";
 
 @ApiTags("driver")
 @Controller("driver")
@@ -193,5 +195,16 @@ export class DriverController {
   })
   remove(@Param("id") id: string) {
     return this.driverService.remove(+id);
+  }
+
+  @Post("find-order")
+  @ApiOperation({ summary: "Find orders based on 'from' and 'to' criteria" })
+  @ApiResponse({
+    status: 200,
+    description: "Orders found successfully",
+    type: [TaxiOrder],  
+  })
+  findOrder(@Body() findOrderDto: FindOrderDto) {
+    return this.driverService.findOrder(findOrderDto);
   }
 }
