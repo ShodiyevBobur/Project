@@ -1,15 +1,29 @@
-import { Injectable } from '@nestjs/common';
-import { CreateBalanceDto } from './dto/create-balance.dto';
-import { UpdateBalanceDto } from './dto/update-balance.dto';
+import { Injectable } from "@nestjs/common";
+import { CreateBalanceDto } from "./dto/create-balance.dto";
+import { UpdateBalanceDto } from "./dto/update-balance.dto";
+import { InjectModel } from "@nestjs/sequelize";
+import { Balance } from "./entities/balance.entity";
+import { Driver } from "src/driver/entities/driver.entity";
 
 @Injectable()
 export class BalanceService {
-  create(createBalanceDto: CreateBalanceDto) {
-    return 'This action adds a new balance';
+  constructor(
+    @InjectModel(Balance)
+    private readonly balanceRepo: typeof Balance,
+    @InjectModel(Driver)
+    private readonly driverRepo: typeof Driver
+  ) {}
+
+  async create(createBalanceDto: CreateBalanceDto) {
+    const { amount, driver_id } = createBalanceDto;
+    const driver = await this.driverRepo.findByPk(driver_id);
+    if (!driver) throw new Error("Driver not found");
+    driver.total_balance += amount;
+    return await this.balanceRepo.create(createBalanceDto);
   }
 
   findAll() {
-    return `This action returns all balance`;
+    return this.balanceRepo.findAll();
   }
 
   findOne(id: number) {

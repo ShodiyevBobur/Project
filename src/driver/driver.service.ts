@@ -17,15 +17,19 @@ import { Response } from "express";
 import { SummaDto } from "./dto/summa-driver.dto";
 import { Region } from "../region/model/region.model";
 import { from } from "rxjs";
-import { FindOrderDto } from "./dto/find-order.dto";
-import { TaxiOrder } from "../taxi_order/model/taxi_order.model";
+
+import { DeliveryOrder } from "src/delivery_order/entities/delivery_order.entity";
+import { TaxiOrder } from "src/taxi_order/model/taxi_order.model";
+
 
 @Injectable()
 export class DriverService {
   constructor(
     @InjectModel(Driver) private driverRepo: typeof Driver,
     @InjectModel(Region) private regionRepo: typeof Region,
+
     @InjectModel(TaxiOrder) private orderRepo: typeof TaxiOrder,
+
     private jwtService: JwtService,
     private cloudinaryService: CloudinaryService,
   ) {}
@@ -269,6 +273,22 @@ export class DriverService {
     }
     return this.driverRepo.update(updateDriverDto, { where: { id } });
   }
+
+  async getMoneyTaxi(driver_id:number, taxi_order_id:number){
+    const  driver = await this.driverRepo.findByPk(driver_id)
+    const order = await this.taxi_OrderRepo.findByPk(taxi_order_id)
+
+    if(!driver) throw new NotFoundException("Driver not found!");
+    if(!order) throw new NotFoundException("Taxi order not found!");
+
+    const money = Number(order.distance.split(" ")[0]);
+    if(driver.total_balance < money){
+      return "Balan yetarli emas Iltimos Balansingizni toldiring"
+    }
+    driver.total_balance -= money;
+
+  }
+
 
   /// remove driver
 

@@ -9,9 +9,10 @@ import {
 } from "sequelize-typescript";
 import { District } from "../../districts/models/district.model";
 
-interface ICreateTaxiOrderAttr {
-  name: string;
-}
+
+interface ICreateTaxiOrderAttr{
+    distance: string
+    duration: string;
 
 @Table({ tableName: "taxiorder", createdAt: false, updatedAt: false })
 export class TaxiOrder extends Model<TaxiOrder, ICreateTaxiOrderAttr> {
@@ -44,40 +45,18 @@ export class TaxiOrder extends Model<TaxiOrder, ICreateTaxiOrderAttr> {
   })
   date: string;
 
-  @ApiProperty({
-    example: 101,
-    description: "ID of the starting district",
-  })
-  @ForeignKey(() => District)
-  @Column({
-    type: DataType.INTEGER,
-  })
-  from_district_id: number;
 
-  @BelongsTo(() => District, "from_district_id")
-  fromDistrict: District;
+  @ApiProperty({ example: 1, description: "Taxi order Id unique" })
+  @Column({ type: DataType.INTEGER })
+  from_distinct_id: number;
 
-  @ApiProperty({
-    example: 202,
-    description: "ID of the destination district",
-  })
-  @ForeignKey(() => District)
-  @Column({
-    type: DataType.INTEGER,
-  })
-  to_district_id: number;
+  @ApiProperty({ example: 1, description: "Taxi order Id unique" })
+  @Column({ type: DataType.INTEGER })
+  to_distinct_id: number;
 
-  @BelongsTo(() => District, "to_district_id")
-  toDistrict: District;
-
-  @ApiProperty({
-    example: "user123",
-    description: "ID of the user who created the taxi order",
-  })
-  @Column({
-    type: DataType.STRING,
-  })
-  user_id: string;
+  @ApiProperty({ example: 1, description: "Taxi order Id unique" })
+  @Column({ type: DataType.INTEGER })
+  user_id: number;
 
   @ApiProperty({
     example: "40.712776, -74.005974",
@@ -87,4 +66,16 @@ export class TaxiOrder extends Model<TaxiOrder, ICreateTaxiOrderAttr> {
     type: DataType.STRING,
   })
   location_start: string;
+
+  @ApiProperty({ example: 1, description: "Taxi order distance " })
+  @Column({ type: DataType.STRING })
+  distance: string;
+
+  @ApiProperty({ example: 1, description: "Taxi order duration " })
+  @Column({ type: DataType.STRING })
+  duration: string;
+
+
+
+
 }

@@ -1,4 +1,6 @@
-import { IsNotEmpty, IsString, IsInt } from "class-validator";
+
+import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateTaxiOrderDto {
@@ -16,22 +18,20 @@ export class CreateTaxiOrderDto {
   @IsNotEmpty()
   location_start: string;
 
-  @ApiProperty({
-    description: "The ID of the district where the taxi ride starts",
-  })
-  @IsInt()
-  @IsNotEmpty()
-  from_district_id: number;
 
-  @ApiProperty({
-    description: "The ID of the district where the taxi ride ends",
-  })
-  @IsInt()
+  @ApiProperty({ description: "The end location of the taxi order" })
+  @IsNumber()
   @IsNotEmpty()
-  to_district_id: number;
+  from_distinct_id: number;
 
-  @ApiProperty({ description: "The user ID associated with the taxi order" })
-  @IsString()
+  @ApiProperty({ description: "The end location of the taxi order" })
+  @IsNumber()
   @IsNotEmpty()
-  user_id: string;
+  to_distinct_id: number;
+
+  @ApiProperty({ description: "The estimated cost of the taxi order" })
+  @IsNumber()
+  @IsNotEmpty()
+  user_id: number;
+
 }
