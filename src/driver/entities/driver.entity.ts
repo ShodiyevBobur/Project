@@ -75,7 +75,7 @@ export class Driver extends Model<Driver> {
     description: "The total balance of the driver",
   })
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.DECIMAL(10,2),
     allowNull: false,
     defaultValue: 0,
   })

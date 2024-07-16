@@ -3,19 +3,19 @@ import {
   Column,
   DataType,
   ForeignKey,
+  Model,
   Table,
 } from "sequelize-typescript";
 
-@Table
-export class Balance {
-  @Column({ type: DataType.INTEGER, allowNull: false })
-  amount: string;
-  @Column({ type: DataType.STRING, allowNull: false })
-  transfer_date: string;
+interface ICreateBalanceAttr {
+  amount: number;
+  driverId: number;
+}
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  transfer_type: string;
-
+@Table({ tableName: "balance" })
+export class Balance extends Model<Balance, ICreateBalanceAttr> {
+  @Column({ type: DataType.DECIMAL(10, 2), allowNull: false })
+  amount: number;
   @Column({ type: DataType.INTEGER, allowNull: false })
   driverId: number;
 }

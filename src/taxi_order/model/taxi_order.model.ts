@@ -4,7 +4,8 @@ import { Column, DataType, Model, Table } from "sequelize-typescript";
 
 
 interface ICreateTaxiOrderAttr{
-    name: string
+    distance: string
+    duration: string;
 }
 
 @Table({ tableName: "taxiorder" })
@@ -29,18 +30,31 @@ export class TaxiOrder extends Model<TaxiOrder, ICreateTaxiOrderAttr> {
   date: string;
 
   @ApiProperty({ example: 1, description: "Taxi order Id unique" })
-  @Column({ type: DataType.STRING })
-  from_distinct_id: string;
+  @Column({ type: DataType.INTEGER })
+  from_distinct_id: number;
 
   @ApiProperty({ example: 1, description: "Taxi order Id unique" })
-  @Column({ type: DataType.STRING })
-  to_distinct_id: string;
+  @Column({ type: DataType.INTEGER })
+  to_distinct_id: number;
 
   @ApiProperty({ example: 1, description: "Taxi order Id unique" })
-  @Column({ type: DataType.STRING })
-  user_id: string;
+  @Column({ type: DataType.INTEGER })
+  user_id: number;
 
   @ApiProperty({ example: 1, description: "Taxi order Id unique" })
   @Column({ type: DataType.STRING })
   location_start: string;
+
+  @ApiProperty({ example: 1, description: "Taxi order distance " })
+  @Column({ type: DataType.STRING })
+  distance: string;
+
+  @ApiProperty({ example: 1, description: "Taxi order duration " })
+  @Column({ type: DataType.STRING })
+  duration: string;
+
+
+
+
+
 }
