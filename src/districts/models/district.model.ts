@@ -4,16 +4,18 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   Model,
   Table,
 } from "sequelize-typescript";
 import { Region } from "../../region/model/region.model";
+import { TaxiOrder } from "../../taxi_order/model/taxi_order.model";
 
 interface ICreateDistrictAttr {
   name: string;
 }
 
-@Table({ tableName: "district" })
+@Table({ tableName: "district", createdAt: false, updatedAt: false })
 export class District extends Model<District, ICreateDistrictAttr> {
   @ApiProperty({
     example: 1,

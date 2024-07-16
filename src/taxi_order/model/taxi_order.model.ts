@@ -1,18 +1,24 @@
-
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, DataType, Model, Table } from "sequelize-typescript";
+import {
+  Column,
+  DataType,
+  Model,
+  Table,
+  ForeignKey,
+  BelongsTo,
+} from "sequelize-typescript";
+import { District } from "../../districts/models/district.model";
 
 
 interface ICreateTaxiOrderAttr{
     distance: string
     duration: string;
-}
 
-@Table({ tableName: "taxiorder" })
+@Table({ tableName: "taxiorder", createdAt: false, updatedAt: false })
 export class TaxiOrder extends Model<TaxiOrder, ICreateTaxiOrderAttr> {
   @ApiProperty({
     example: 1,
-    description: "taxi order ID unikal raqami",
+    description: "Unique taxi order ID",
   })
   @Column({
     type: DataType.INTEGER,
@@ -21,13 +27,24 @@ export class TaxiOrder extends Model<TaxiOrder, ICreateTaxiOrderAttr> {
   })
   id: number;
 
-  @ApiProperty({ example: 1, description: "Taxi order Id unique" })
-  @Column({ type: DataType.STRING })
+  @ApiProperty({
+    example: "A trip from downtown to airport",
+    description: "Description of the taxi order",
+  })
+  @Column({
+    type: DataType.STRING,
+  })
   description: string;
 
-  @ApiProperty({ example: 1, description: "Taxi order Id unique" })
-  @Column({ type: DataType.STRING })
+  @ApiProperty({
+    example: "2024-07-13T12:34:56Z",
+    description: "Date and time of the taxi order",
+  })
+  @Column({
+    type: DataType.STRING,
+  })
   date: string;
+
 
   @ApiProperty({ example: 1, description: "Taxi order Id unique" })
   @Column({ type: DataType.INTEGER })
@@ -41,8 +58,13 @@ export class TaxiOrder extends Model<TaxiOrder, ICreateTaxiOrderAttr> {
   @Column({ type: DataType.INTEGER })
   user_id: number;
 
-  @ApiProperty({ example: 1, description: "Taxi order Id unique" })
-  @Column({ type: DataType.STRING })
+  @ApiProperty({
+    example: "40.712776, -74.005974",
+    description: "Starting location coordinates",
+  })
+  @Column({
+    type: DataType.STRING,
+  })
   location_start: string;
 
   @ApiProperty({ example: 1, description: "Taxi order distance " })
@@ -52,7 +74,6 @@ export class TaxiOrder extends Model<TaxiOrder, ICreateTaxiOrderAttr> {
   @ApiProperty({ example: 1, description: "Taxi order duration " })
   @Column({ type: DataType.STRING })
   duration: string;
-
 
 
 

@@ -100,20 +100,6 @@ export class Driver extends Model<Driver> {
   isActive: boolean;
 
   @ApiProperty({
-    example: "Tashent",
-    description: "where from",
-  })
-  @Column({ type: DataType.STRING, allowNull: false })
-  from: string;
-
-  @ApiProperty({
-    example: "Samarkand",
-    description: "where to",
-  })
-  @Column({ type: DataType.STRING, allowNull: false })
-  to: string;
-
-  @ApiProperty({
     example: "0594grjoitjrgijgrjjfrb",
     description: "hashed refresh token for driver",
   })
