@@ -16,11 +16,8 @@ import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { Response } from "express";
 import { SummaDto } from "./dto/summa-driver.dto";
 import { Region } from "../region/model/region.model";
-import { from } from "rxjs";
-
-import { DeliveryOrder } from "src/delivery_order/entities/delivery_order.entity";
 import { TaxiOrder } from "src/taxi_order/model/taxi_order.model";
-
+import { FindOrderDto } from "./dto/find-order.dto";
 
 @Injectable()
 export class DriverService {
@@ -31,7 +28,7 @@ export class DriverService {
     @InjectModel(TaxiOrder) private orderRepo: typeof TaxiOrder,
 
     private jwtService: JwtService,
-    private cloudinaryService: CloudinaryService,
+    private cloudinaryService: CloudinaryService
   ) {}
 
   // Get tokens service
@@ -274,23 +271,31 @@ export class DriverService {
     return this.driverRepo.update(updateDriverDto, { where: { id } });
   }
 
-  async getMoneyTaxi(driver_id:number, taxi_order_id:number){
-    const  driver = await this.driverRepo.findByPk(driver_id)
-    const order = await this.taxi_OrderRepo.findByPk(taxi_order_id)
+  async getMoneyTaxi(driver_id: number, taxi_order_id: number) {
+    const driver = await this.driverRepo.findByPk(driver_id);
+    const order = await this.orderRepo.findByPk(taxi_order_id);
 
-    if(!driver) throw new NotFoundException("Driver not found!");
-    if(!order) throw new NotFoundException("Taxi order not found!");
+    if (!driver) throw new NotFoundException("Driver Not Found!");
 
-    const money = Number(order.distance.split(" ")[0]);
-    if(driver.total_balance < money){
-      return "Balan yetarli emas Iltimos Balansingizni toldiring"
+    if (!order) throw new NotFoundException("Taxi order not found!");
+
+    const distanceParts = order.distance.split(" ");
+    if (distanceParts.length < 2 || isNaN(Number(distanceParts[0]))) {
+      throw new Error("Invalid distance format!");
     }
+
+    const distanceInKm = Number(distanceParts[0]);
+    const money = (distanceInKm / 100) * 10000;
+
+    if (driver.total_balance < money) {
+      return "Insufficient balance, please top up your balance";
+    }
+
     driver.total_balance -= money;
+    await driver.save();
 
+    return "Your balance has been transferred";
   }
-
-
-  /// remove driver
 
   async remove(id: number) {
     const driver = await this.driverRepo.findByPk(id);
@@ -304,18 +309,30 @@ export class DriverService {
 
   async findOrder(findOrderDto: FindOrderDto) {
     const { from, to } = findOrderDto;
-    const orders = await this.orderRepo.findAll({
-      where: {
-        from_district_id: { [Op.eq]: from },
-        to_district_id: { [Op.eq]: to },
-      },
-      include: {all: true}
-    });
 
-    if (!orders.length) {
-      throw new NotFoundException("No orders found for the specified criteria");
+    if (!from || !to) {
+      throw new NotFoundException("Invalid search criteria");
     }
 
-    return orders;
+    try {
+      const orders = await this.orderRepo.findAll({
+        where: {
+          from_distinct_id: { [Op.eq]: from },
+          to_distinct_id: { [Op.eq]: to },
+        },
+        include: { all: true },
+      });
+
+      if (!orders.length) {
+        throw new NotFoundException(
+          "No orders found for the specified criteria"
+        );
+      }
+
+      return orders;
+    } catch (error) {
+      // Log the error or handle it as necessary
+      throw new Error("Error while searching for orders");
+    }
   }
 }

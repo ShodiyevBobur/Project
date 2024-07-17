@@ -36,7 +36,7 @@ export class CreateDeliveryOrderDto {
   })
   @IsInt()
   @IsNotEmpty()
-  user_id: number;
+  clientId: number;
 
   @ApiProperty({ example: "Furniture", description: "Name of the load" })
   @IsString()

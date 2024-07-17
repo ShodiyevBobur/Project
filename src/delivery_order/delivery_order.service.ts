@@ -7,10 +7,10 @@ import { InjectModel } from "@nestjs/sequelize";
 import axios from "axios";
 
 import { UpdateDeliveryOrderDto } from "./dto/update-delivery_order.dto";
-import { DeliveryOrder } from "./entities/delivery_order.entity";
+import { DeliveryOrder } from "./model/delivery_order.entity";
 import { CreateDeliveryOrderDto } from "./dto/create-delivery_order.dto";
 import { Region } from "src/region/model/region.model";
-import { District } from "src/districts/models/district.model";
+import { District } from "../districts/models/district.model";
 
 @Injectable()
 export class DeliveryOrderService {
@@ -86,7 +86,7 @@ export class DeliveryOrderService {
         duration,
         ...createDeliveryOrderDto,
       });
-      return "Ok"
+      return "Ok";
     } catch (error) {
       console.error(error); // Log the error for debugging purposes
       throw new InternalServerErrorException("Failed to create delivery order");
@@ -94,11 +94,13 @@ export class DeliveryOrderService {
   }
 
   async findAll(): Promise<DeliveryOrder[]> {
-    return await this.deliveryOrderModel.findAll();
+    return await this.deliveryOrderModel.findAll({ include: { all: true } });
   }
 
   async findOne(id: number): Promise<DeliveryOrder> {
-    const deliveryOrder = await this.deliveryOrderModel.findByPk(id);
+    const deliveryOrder = await this.deliveryOrderModel.findByPk(id, {
+      include: { all: true },
+    });
     if (!deliveryOrder) {
       throw new NotFoundException(`DeliveryOrder with id ${id} not found`);
     }

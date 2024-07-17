@@ -10,6 +10,7 @@ import {
 } from "sequelize-typescript";
 import { Region } from "../../region/model/region.model";
 import { TaxiOrder } from "../../taxi_order/model/taxi_order.model";
+import { DeliveryOrder } from "../../delivery_order/model/delivery_order.entity";
 
 interface ICreateDistrictAttr {
   name: string;
@@ -41,4 +42,10 @@ export class District extends Model<District, ICreateDistrictAttr> {
 
   @BelongsTo(() => Region)
   region: Region;
+
+  @HasMany(() => TaxiOrder)
+  taxiOrders: TaxiOrder;
+
+  @HasMany(() => DeliveryOrder)
+  deliveryOrders: DeliveryOrder;
 }

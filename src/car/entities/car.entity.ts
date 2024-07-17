@@ -4,9 +4,11 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   Model,
   Table,
 } from "sequelize-typescript";
+import { CarDriver } from "../../car_driver/entities/car_driver.entity";
 
 interface ICarCreationAttr {
   car_number: string;
@@ -89,4 +91,7 @@ export class Car extends Model<Car, ICarCreationAttr> {
     allowNull: false,
   })
   tex_passport: string;
+
+  @HasMany(() => CarDriver)
+  drivers: CarDriver[];
 }

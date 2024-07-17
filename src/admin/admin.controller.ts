@@ -17,11 +17,9 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Admin } from "./entities/admin.entity";
 import { Response } from "express";
 import { LoginAdminDto } from "./dto/login-admin.dto";
-import { Cookiegetter } from "src/decorators/cookie_getter.decorator";
 import { UpdatePasswordAdminDto } from "./dto/update-password-admin.dto";
-import { creatorGuard } from "src/guards/admin.creator.guard";
-import { AdminSelfGuard } from "src/guards/self.admin.guard";
-import { AdminGuard } from "src/guards/admin.guard";
+
+import { CookieGetter } from "src/decorators/cookie_getter.decorator";
 
 @ApiTags("Admin")
 @Controller("admin")
@@ -34,7 +32,6 @@ export class AdminController {
     description: "The admin has been successfully created.",
     type: Admin,
   })
-  @UseGuards(creatorGuard)
   @Post()
   create(
     @Body() createAdminDto: CreateAdminDto,
@@ -61,7 +58,7 @@ export class AdminController {
   @HttpCode(200)
   @Post("logout")
   logout(
-    @Cookiegetter("refresh_token") refreshToken: string,
+    @CookieGetter("refresh_token") refreshToken: string,
     @Res({ passthrough: true }) res: Response
   ) {
     return this.adminService.logout(refreshToken, res);
@@ -73,7 +70,7 @@ export class AdminController {
   @Post("refresh/:id")
   refresh(
     @Param("id") id: number,
-    @Cookiegetter("refresh_token") refreshToken: string,
+    @CookieGetter("refresh_token") refreshToken: string,
     @Res({ passthrough: true }) res: Response
   ) {
     return this.adminService.refreshToken(+id, refreshToken, res);
@@ -85,7 +82,6 @@ export class AdminController {
     description: "Returns all admin.",
     type: [Admin],
   })
-  @UseGuards(AdminGuard)
   @Get()
   findAll() {
     return this.adminService.findAll();
@@ -97,14 +93,11 @@ export class AdminController {
     description: "Returns the admin.",
     type: Admin,
   })
-  @UseGuards(creatorGuard)
   @Get(":id")
   findOne(@Param("id") id: string) {
     return this.adminService.findOne(+id);
   }
 
-  @UseGuards(AdminSelfGuard)
-  @UseGuards(AdminGuard)
   @Get("self/:id")
   findSelf(@Param("id") id: string) {
     return this.adminService.findOne(+id);
@@ -112,7 +105,6 @@ export class AdminController {
 
   @ApiOperation({ summary: "Update a admin" })
   @ApiResponse({ status: 200, description: "Admin updated successfully." })
-  @UseGuards(creatorGuard)
   @Patch(":id")
   update(@Param("id") id: string, @Body() updateAdminDto: UpdateAdminDto) {
     return this.adminService.update(+id, updateAdminDto);
@@ -124,7 +116,6 @@ export class AdminController {
     description: "Admin password updated successfully.",
   })
   @Patch("password/:id")
-  @UseGuards(creatorGuard)
   updatePassword(
     @Param("id") id: string,
     @Body() updatePasswordDto: UpdatePasswordAdminDto
@@ -134,7 +125,6 @@ export class AdminController {
 
   @ApiOperation({ summary: "Remove a admin" })
   @ApiResponse({ status: 200, description: "Admin removed successfully." })
-  @UseGuards(creatorGuard)
   @Delete(":id")
   remove(@Param("id") id: string) {
     return this.adminService.remove(+id);

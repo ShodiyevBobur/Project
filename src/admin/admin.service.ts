@@ -11,7 +11,6 @@ import { InjectModel } from "@nestjs/sequelize";
 import { Admin } from "./entities/admin.entity";
 import { JwtService } from "@nestjs/jwt";
 import { LoginAdminDto } from "./dto/login-admin.dto";
-
 import * as bcrypt from "bcrypt";
 import { v4 } from "uuid";
 import { Response } from "express";

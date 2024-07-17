@@ -8,11 +8,12 @@ import {
   BelongsTo,
 } from "sequelize-typescript";
 import { District } from "../../districts/models/district.model";
+import { Client } from "../../client/model/client.entity";
 
-
-interface ICreateTaxiOrderAttr{
-    distance: string
-    duration: string;
+interface ICreateTaxiOrderAttr {
+  distance: string;
+  duration: string;
+}
 
 @Table({ tableName: "taxiorder", createdAt: false, updatedAt: false })
 export class TaxiOrder extends Model<TaxiOrder, ICreateTaxiOrderAttr> {
@@ -45,18 +46,20 @@ export class TaxiOrder extends Model<TaxiOrder, ICreateTaxiOrderAttr> {
   })
   date: string;
 
-
+  @ForeignKey(() => District)
   @ApiProperty({ example: 1, description: "Taxi order Id unique" })
   @Column({ type: DataType.INTEGER })
   from_distinct_id: number;
 
+  @ForeignKey(() => District)
   @ApiProperty({ example: 1, description: "Taxi order Id unique" })
   @Column({ type: DataType.INTEGER })
   to_distinct_id: number;
 
+  @ForeignKey(() => Client)
   @ApiProperty({ example: 1, description: "Taxi order Id unique" })
   @Column({ type: DataType.INTEGER })
-  user_id: number;
+  clientId: number;
 
   @ApiProperty({
     example: "40.712776, -74.005974",
@@ -75,7 +78,12 @@ export class TaxiOrder extends Model<TaxiOrder, ICreateTaxiOrderAttr> {
   @Column({ type: DataType.STRING })
   duration: string;
 
+  @BelongsTo(() => Client)
+  clients: Client;
 
+  @BelongsTo(() => District, { as: "fromDistrict" })
+  fromdistrict: District;
 
-
+  @BelongsTo(() => District, { as: "toDistrict" })
+  toDistrict: District;
 }

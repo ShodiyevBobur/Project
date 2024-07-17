@@ -1,5 +1,7 @@
-import { Column, DataType, Model, Table } from "sequelize-typescript";
+import { Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
 import { ApiProperty } from "@nestjs/swagger";
+import { DeliveryOrder } from "../../delivery_order/model/delivery_order.entity";
+import { TaxiOrder } from "../../taxi_order/model/taxi_order.model";
 
 interface IClientAttr {
   name: string;
@@ -67,4 +69,10 @@ export class Client extends Model<Client, IClientAttr> {
     type: DataType.STRING,
   })
   hashed_refresh_token: string;
+
+  @HasMany(() => DeliveryOrder)
+  deliveryOrders: DeliveryOrder[];
+
+  @HasMany(() => TaxiOrder)
+  taxiOrders: TaxiOrder[];
 }

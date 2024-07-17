@@ -1,11 +1,10 @@
-
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { CreateTaxiOrderDto } from "./dto/create-taxi_order.dto";
 import { UpdateTaxiOrderDto } from "./dto/update-taxi_order.dto";
 import { TaxiOrder } from "./model/taxi_order.model";
 import { InjectModel } from "@nestjs/sequelize";
-import { Region } from "src/region/model/region.model";
-import { District } from "src/districts/models/district.model";
+import { Region } from "../region/model/region.model";
+import { District } from "../districts/models/district.model";
 import axios from "axios";
 
 @Injectable()
@@ -47,17 +46,29 @@ export class TaxiOrderService {
     try {
       const { from_distinct_id, to_distinct_id } = CreateTaxiOrderDto;
 
-      const DiscritFrom = await this.discritModel.findByPk(from_distinct_id);
+      // Fetch districts
+      const fromDistrict = await this.discritModel.findByPk(from_distinct_id);
+      const toDistrict = await this.discritModel.findByPk(to_distinct_id);
 
-      const toDiscrit = await this.discritModel.findByPk(to_distinct_id);
-      DiscritFrom.region_id;
+      if (!fromDistrict || !toDistrict) {
+        throw new Error("Invalid district ID(s) provided.");
+      }
 
-      const RegionFrom = await this.regionModel.findByPk(DiscritFrom.region_id);
-      const toRegion = await this.regionModel.findByPk(toDiscrit.region_id);
+      // Fetch regions
+      const fromRegion = await this.regionModel.findByPk(
+        fromDistrict.region_id
+      );
+      const toRegion = await this.regionModel.findByPk(toDistrict.region_id);
 
-      const fromCoordinates = await this.getCoordinates(RegionFrom.name);
+      if (!fromRegion || !toRegion) {
+        throw new Error("Regions not found for the provided district IDs.");
+      }
+
+      // Get coordinates for the regions
+      const fromCoordinates = await this.getCoordinates(fromRegion.name);
       const toCoordinates = await this.getCoordinates(toRegion.name);
 
+      // Fetch distance and duration from Google Maps API
       const response = await axios.get(
         `https://maps.googleapis.com/maps/api/distancematrix/json`,
         {
@@ -76,49 +87,46 @@ export class TaxiOrderService {
       const distance = response.data.rows[0].elements[0].distance.text;
       const duration = response.data.rows[0].elements[0].duration.text;
 
-      await this.taxiOrderRepo.create({
+      // Create the taxi order
+      const taxiOrder = await this.taxiOrderRepo.create({
         distance,
         duration,
         ...CreateTaxiOrderDto,
       });
-      return "Ok";
+
+      return taxiOrder;
     } catch (error) {
       console.error(error); // Log the error for debugging purposes
-      throw new InternalServerErrorException("Failed to create delivery order");
+      throw new InternalServerErrorException("Failed to create taxi order");
     }
   }
 
-
-    create(createTaxiOrderDto: CreateTaxiOrderDto) {
-      return this.taxiOrderRepo.create(createTaxiOrderDto);
-    }
-
-    findAll() {
-      return this.taxiOrderRepo.findAll({
-        include: [
-          { model: District, as: "fromDistrict" },
-          { model: District, as: "toDistrict" },
-        ],
-      });
-    }
-
-    findOne(id: number) {
-      return this.taxiOrderRepo.findByPk(id, {
-        include: [
-          { model: District, as: "fromDistrict" },
-          { model: District, as: "toDistrict" },
-        ],
-      });
-    }
-
-    update(id: number, updateTaxiOrderDto: UpdateTaxiOrderDto) {
-      return this.taxiOrderRepo.update(updateTaxiOrderDto, {
-        where: { id },
-        returning: true,
-      });
-    }
-
-    remove(id: number) {
-      return this.taxiOrderRepo.destroy({ where: { id } });
-    }
+  async findAll() {
+    return this.taxiOrderRepo.findAll({
+      include: [
+        { model: this.discritModel, as: "fromDistrict" },
+        { model: this.discritModel, as: "toDistrict" },
+      ],
+    });
   }
+
+  findOne(id: number) {
+    return this.taxiOrderRepo.findByPk(id, {
+      include: [
+        { model: District, as: "fromDistrict" },
+        { model: District, as: "toDistrict" },
+      ],
+    });
+  }
+
+  update(id: number, updateTaxiOrderDto: UpdateTaxiOrderDto) {
+    return this.taxiOrderRepo.update(updateTaxiOrderDto, {
+      where: { id },
+      returning: true,
+    });
+  }
+
+  remove(id: number) {
+    return this.taxiOrderRepo.destroy({ where: { id } });
+  }
+}

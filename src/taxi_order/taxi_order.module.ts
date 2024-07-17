@@ -9,7 +9,10 @@ import { Region } from "src/region/model/region.model";
 import { District } from "src/districts/models/district.model";
 
 @Module({
-  imports: [SequelizeModule.forFeature([TaxiOrder,Region,District]), JwtModule.register({})],
+  imports: [
+    SequelizeModule.forFeature([TaxiOrder, Region, District]),
+    JwtModule.register({}),
+  ],
 
   controllers: [TaxiOrderController],
   providers: [TaxiOrderService],

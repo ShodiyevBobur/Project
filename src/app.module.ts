@@ -18,9 +18,6 @@ import { DriverModule } from "./driver/driver.module";
 import { CarDriverModule } from "./car_driver/car_driver.module";
 import { CarModule } from "./car/car.module";
 
-
-
-
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: ".env", isGlobal: true }),

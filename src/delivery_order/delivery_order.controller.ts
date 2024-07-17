@@ -2,7 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { DeliveryOrderService } from './delivery_order.service';
 import { CreateDeliveryOrderDto } from './dto/create-delivery_order.dto';
 import { UpdateDeliveryOrderDto } from './dto/update-delivery_order.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Delivery-Order")
 @Controller('delivery-order')
 export class DeliveryOrderController {
   constructor(private readonly deliveryOrderService: DeliveryOrderService) {}

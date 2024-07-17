@@ -1,6 +1,14 @@
-import { Column, Model, Table, DataType, HasOne } from "sequelize-typescript";
+import {
+  Column,
+  Model,
+  Table,
+  DataType,
+  HasOne,
+  HasMany,
+} from "sequelize-typescript";
 import { ApiProperty } from "@nestjs/swagger";
 import { Balance } from "../../balance/entities/balance.entity";
+import { CarDriver } from "../../car_driver/entities/car_driver.entity";
 
 @Table({ tableName: "drivers" })
 export class Driver extends Model<Driver> {
@@ -75,7 +83,7 @@ export class Driver extends Model<Driver> {
     description: "The total balance of the driver",
   })
   @Column({
-    type: DataType.DECIMAL(10,2),
+    type: DataType.DECIMAL(10, 2),
     allowNull: false,
     defaultValue: 0,
   })
@@ -107,4 +115,10 @@ export class Driver extends Model<Driver> {
     type: DataType.STRING,
   })
   hashed_refresh_token: string;
+
+  @HasOne(() => Balance)
+  balance: Balance; 
+
+  @HasMany(() => CarDriver)
+  cars: CarDriver[];
 }

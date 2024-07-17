@@ -1,4 +1,3 @@
-
 import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 import { ApiProperty } from "@nestjs/swagger";
@@ -18,7 +17,6 @@ export class CreateTaxiOrderDto {
   @IsNotEmpty()
   location_start: string;
 
-
   @ApiProperty({ description: "The end location of the taxi order" })
   @IsNumber()
   @IsNotEmpty()
@@ -32,6 +30,5 @@ export class CreateTaxiOrderDto {
   @ApiProperty({ description: "The estimated cost of the taxi order" })
   @IsNumber()
   @IsNotEmpty()
-  user_id: number;
-
+  clientId: number;
 }
